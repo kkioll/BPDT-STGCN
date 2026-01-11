@@ -14,8 +14,7 @@ LR = 1e-3
 LR_DECAY_RATE = 0.1
 LR_DECAY_STEP = 70
 ACCUMULATION_STEPS = 4
-# SELECTED_BODY_PARTS = ['head', 'hand', 'leg']
-SELECTED_BODY_PARTS = ['head', 'hand']
+SELECTED_BODY_PARTS = ['head', 'hand', 'leg']
 
 # ===================== Model & Evaluation Config =====================
 CLUSTER_NUM = 3
@@ -29,4 +28,5 @@ KMEANS_N_INIT = 10
 GRAPH_ARGS = {'layout': 'openpose', 'strategy': 'uniform'}
 
 # ===================== Fixed Config =====================
+
 DEVICE = 'cuda' if __name__ == '__main__' else None

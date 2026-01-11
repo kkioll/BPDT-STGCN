@@ -8,20 +8,12 @@ from net.utils.graph import Graph
 class Model(nn.Module):
     def __init__(self, in_channels, graph_args, edge_importance_weighting, **kwargs):
         super().__init__()
-        # 1. 构建骨架图 A
         self.graph = Graph(**graph_args)
         A = torch.tensor(self.graph.A, dtype=torch.float32, requires_grad=False)
         self.register_buffer('A', A)
-        # print("邻接矩阵 A 的形状：", self.A.shape)   # [3,18,18]
-        # print("A[0]（自环子集）：\n", self.A[0])
-        # print("A[1]（第1类邻接子集）：\n", self.A[1])
-        # print("A[2]（第2类邻接子集）：\n", self.A[2])
-        # 2. BatchNorm1d 做 “通道×顶点” 维度上的归一化
-        #    num_features = in_channels * num_vertices
         num_vertices = A.size(1)
         self.data_bn = nn.BatchNorm1d(in_channels * num_vertices)
 
-        # 3. ST-GCN 层
         spatial_kernel_size = A.size(0)
         temporal_kernel_size = 9
         kernel_size = (temporal_kernel_size, spatial_kernel_size)
@@ -39,7 +31,6 @@ class Model(nn.Module):
             st_gcn(256,         256,  kernel_size, 1, **kwargs),
         ])
 
-        # 4. 可学习的边权重
         if edge_importance_weighting:
             self.edge_importance = nn.ParameterList([
                 nn.Parameter(torch.ones(self.A.size()))
@@ -55,24 +46,19 @@ class Model(nn.Module):
         # x: (N, C, T, V, M)
         N, C, T, V, M = x.size()
 
-        # —— 正确的 BatchNorm1d ——
-        # 1) 把 (N, C, T, V, M) → (N*M, C, V, T)
         x = x.permute(0,4,1,3,2).contiguous()    # → (N, M, C, V, T)
         x = x.view(N*M, C*V, T)                  # → (N*M, C*V, T)
-        # 2) 在 (C*V) 维度上做归一化
+
         x = self.data_bn(x)                      # BatchNorm1d(num_features=C*V)
-        # 3) 恢复到 (N, C, T, V, M)
+
         x = x.view(N, M, C, V, T).permute(0,2,4,3,1).contiguous()  # → (N, C, T, V, M)
         # —— BatchNorm 完成 ——
 
-        # 准备送入 ST-GCN：合并 N*M
         x = x.view(N*M, C, T, V)                 # → (N*M, C, T, V)
 
-        # 图卷积 + 时序卷积
         for gcn, importance in zip(self.st_gcn_networks, self.edge_importance):
             x, _ = gcn(x, self.A * importance)
 
-        # 全局池化
         x = F.avg_pool2d(x, x.size()[2:])        # → (N*M, 256, 1, 1)
         x = x.view(N, M, -1, 1, 1).mean(dim=1)   # → (N, 256, 1, 1)
 

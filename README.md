@@ -7,12 +7,18 @@ Body Part-Based Dual-Task Spatio-Temporal Graph Convolutional Network for Action
 
 ## Installation
 
-### Step 1: Create and activate conda environment
+### Step 1: Create and activate conda environment ###
+
+```bash
 conda create -n interaqa python=3.8 -y
 conda activate interaqa
+```
+### Step 2: Install dependencies ###
 
-### Step 2: Install dependencies
+```bash
 pip install -r requirements.txt
-
-### Step 3: Training 
+```
+### Step 3: Training ###
+Configure the parameters in config.py, run:
+```bash
 python train.py

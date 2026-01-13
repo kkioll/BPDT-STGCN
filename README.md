@@ -13,8 +13,10 @@ conda create -n interaqa python=3.8 -y
 conda activate interaqa
 
 ### Step 2: Install dependencies
+```bash
 pip install -r requirements.txt
 
 ### Step 3: Training
+```bash
 Configure the parameters in config.py
 python train.py

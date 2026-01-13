@@ -14,6 +14,5 @@ conda activate interaqa
 ### Step 2: Install dependencies
 pip install -r requirements.txt
 
-### Step 3: Training
-Configure the parameters in config.py
+### Step 3: Training 
 python train.py

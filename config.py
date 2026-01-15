@@ -30,3 +30,5 @@ GRAPH_ARGS = {'layout': 'openpose', 'strategy': 'uniform'}
 # ===================== Fixed Config =====================
 
 DEVICE = 'cuda' if __name__ == '__main__' else None
+
+

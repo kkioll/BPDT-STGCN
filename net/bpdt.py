@@ -21,7 +21,6 @@ class SpatialAttention(nn.Module):
         return x
 
 
-# 时间注意力机制
 class TemporalAttention(nn.Module):
     def __init__(self, in_channels):
         super().__init__()
@@ -91,7 +90,7 @@ class DynamicFusion(nn.Module):
 
     def forward(self, *inputs):
         num_parts = len(inputs)
-        assert num_parts in [2, 3], f"仅支持2个或3个部位特征输入，当前输入{num_parts}个"
+        assert num_parts in [2, 3], f"{num_parts}"
 
         pooled_features = [
             self.max_pool(x).squeeze(-1).squeeze(-1)  # [N, 256] each
@@ -168,9 +167,9 @@ class Model(nn.Module):
         self.leg_A = torch.tensor(self.graph.leg_A, dtype=torch.float32, requires_grad=False)
 
         # BatchNorm for each track (head, hand, leg)
-        self.head_data_bn = nn.BatchNorm1d(in_channels * 5)  # 头部关节数量
-        self.hand_data_bn = nn.BatchNorm1d(in_channels * 7)  # 手部关节数量
-        self.leg_data_bn = nn.BatchNorm1d(in_channels * 7)  # 腿部关节数量
+        self.head_data_bn = nn.BatchNorm1d(in_channels * 5)  
+        self.hand_data_bn = nn.BatchNorm1d(in_channels * 7)  
+        self.leg_data_bn = nn.BatchNorm1d(in_channels * 7)  
 
         spatial_kernel_size = self.graph.A.size(0)
         temporal_kernel_size = 9
@@ -215,7 +214,6 @@ class Model(nn.Module):
             st_gcn(256, 256, kernel_size, 1, **kwargs),
         ])
 
-        # 可学习的边权重
         if edge_importance_weighting:
             self.head_edge_importance = nn.ParameterList([
                 nn.Parameter(torch.ones(self.head_A.size()))
@@ -234,7 +232,6 @@ class Model(nn.Module):
             self.hand_edge_importance = [1] * len(self.hand_st_gcn)
             self.leg_edge_importance = [1] * len(self.leg_st_gcn)
 
-        # 初始化空间和时间注意力机制
         self.head_spatial_attention = SpatialAttention(in_channels, 5)
         self.head_temporal_attention = TemporalAttention(in_channels)
         self.hand_spatial_attention = SpatialAttention(in_channels, 7)
@@ -284,7 +281,7 @@ class Model(nn.Module):
             part1_V = part1_x.size(3)
             part2_V = part2_x.size(3)
 
-            if part1_V == 5:  # 头部
+            if part1_V == 5: 
                 self.head_A = self.head_A.to(device)
                 part1_x = self.head_spatial_attention(part1_x)
                 part1_x = self.head_temporal_attention(part1_x)
@@ -386,3 +383,4 @@ class st_gcn(nn.Module):
         x = self.tcn(x) + res
 
         return self.relu(x), A
+

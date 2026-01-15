@@ -14,7 +14,6 @@ def visible_gpu(gpus):
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(list(map(str, gpus)))
     return list(range(len(gpus)))
 
-
 def ngpu(gpus):
     """
         count how many gpus used.

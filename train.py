@@ -8,7 +8,6 @@ import torch.utils.data
 import traceback
 import os
 import time
-
 import config
 import utils
 
@@ -184,4 +183,5 @@ def main():
 
 if __name__ == '__main__':
     freeze_support()
+
     main()

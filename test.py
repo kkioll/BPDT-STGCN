@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from feeder.feeder import Feeder
 from net.bpdt import Model
 
+
 WEIGHTS_PATH = r"D:\Github-BPDT-STGCM\weight\ribbon_best.pth"
 TEST_DATA_DIR = r'E:\ACTION-NET-master\datasets\ribbon_datasets\test'
 TEST_LABEL_PATH = r'F:\my-st-gcn\datasets\ribbon_datasets\test.pkl'
@@ -61,7 +62,7 @@ def save_to_csv(sample_ids, true_vals, pred_vals, save_path):
             writer.writerow([sid, f'{tv:.6f}', f'{pv:.6f}'])
 
 
-# 完全沿用你指定的可视化绘图样式，无任何修改
+
 def save_plot(true_vals, pred_vals, save_path, src_coef):
     plt.rcParams['font.sans-serif'] = ['SimHei']
     plt.rcParams['axes.unicode_minus'] = False
@@ -180,7 +181,6 @@ def evaluate():
     print(f'Spearman Rank Correlation: {src:.8f}')
     print('-' * 70)
 
-    # 保存所有结果到当前目录
     save_to_csv(sample_ids, true_vals, pred_vals, CSV_SAVE_PATH)
     save_plot(true_vals, pred_vals, PLOT_SAVE_PATH, src)
     save_report(avg_mse_loss, src, REPORT_SAVE_PATH)
@@ -192,4 +192,5 @@ def evaluate():
 
 
 if __name__ == '__main__':
+
     evaluate()
